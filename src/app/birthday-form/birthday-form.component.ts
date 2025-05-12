@@ -41,10 +41,15 @@ export class BirthdayFormComponent {
 
     const name = this.form.value.name!;
     const surname = this.form.value.surname!;
-    const birthdate = this.form.value.birthdate! as Date;
-    const isoDate = birthdate.toISOString().slice(0, 10);
+    const d = this.form.value.birthdate! as Date;
 
-    this.svc.addBirthday({ name, surname, birthdate: isoDate }).subscribe({
+    // Build YYYY-MM-DD in local time, so no UTC shift
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const localDate = `${year}-${month}-${day}`;
+
+    this.svc.addBirthday({ name, surname, birthdate: localDate }).subscribe({
       next: () => {
         alert('Birthday added!');
         this.form.reset();
