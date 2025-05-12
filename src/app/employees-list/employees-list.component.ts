@@ -29,8 +29,7 @@ export class EmployeesListComponent implements OnInit {
       .fetchAll()
       .pipe(
         tap((response) => {
-          // fetchAll() returns Colleague[] directly
-          this.colleagues = response; // Corrected line
+          this.colleagues = response;
         }),
         catchError((err) => {
           this.error = `Failed to load colleagues: ${
@@ -45,9 +44,7 @@ export class EmployeesListComponent implements OnInit {
       )
       .subscribe();
   }
-  // ...existing code...
   deleteColleague(idx: number) {
-    // Ensure index is valid
     if (idx < 0 || idx >= this.colleagues.length) {
       console.error('Invalid index for delete:', idx);
       return;

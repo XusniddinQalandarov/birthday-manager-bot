@@ -1,13 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { Observable, map, switchMap, take } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Colleague {
   name: string;
   surname: string;
   birthdate: string;
+}
+
+interface JsonBinResponse {
+  record: Colleague[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -18,10 +21,11 @@ export class BirthdayService {
     'Content-Type': 'application/json',
     'X-Master-Key': environment.jsonBin.key,
   });
+
   fetchAll(): Observable<Colleague[]> {
-    return this.http.get<Colleague[]>(this.url, {
-      headers: this.headers,
-    });
+    return this.http
+      .get<JsonBinResponse>(this.url, { headers: this.headers })
+      .pipe(map((resp) => resp.record || []));
   }
 
   saveAll(colleagues: Colleague[]): Observable<void> {
@@ -31,10 +35,7 @@ export class BirthdayService {
   addBirthday(col: Colleague): Observable<void> {
     return this.fetchAll().pipe(
       take(1),
-      switchMap((colleaguesArray) => {
-        const updated = [...colleaguesArray, col];
-        return this.saveAll(updated);
-      })
+      switchMap((existing) => this.saveAll([...existing, col]))
     );
   }
 }
