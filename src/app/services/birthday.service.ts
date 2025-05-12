@@ -16,18 +16,13 @@ interface JsonBinResponse {
 @Injectable({ providedIn: 'root' })
 export class BirthdayService {
   private http = inject(HttpClient);
-  private url = `/api/colleagues`;
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'X-Master-Key': environment.jsonBin.key,
-  });
+  private apiUrl = '/api/colleagues';
 
   fetchAll(): Observable<Colleague[]> {
-    return this.http.get<Colleague[]>(this.url);
+    return this.http.get<Colleague[]>(this.apiUrl);
   }
-
-  saveAll(colleagues: Colleague[]): Observable<void> {
-    return this.http.post<void>(this.url, { colleagues });
+  saveAll(cols: Colleague[]): Observable<void> {
+    return this.http.post<void>(this.apiUrl, { colleagues: cols });
   }
 
   addBirthday(col: Colleague): Observable<void> {
