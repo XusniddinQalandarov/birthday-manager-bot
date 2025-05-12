@@ -1,58 +1,59 @@
-import { Component, OnInit, inject } from '@angular/core';
-import {
-  FormBuilder,
-  FormArray,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { Component, inject } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
-import { BirthdayService, Colleague } from '../services/birthday.service';
+import { BirthdayService } from '../services/birthday.service';
 
 @Component({
   selector: 'app-birthday-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
+  ],
   templateUrl: './birthday-form.component.html',
   styleUrls: ['./birthday-form.component.css'],
 })
-export class BirthdayFormComponent implements OnInit {
+export class BirthdayFormComponent {
   private fb = inject(FormBuilder);
   private svc = inject(BirthdayService);
 
   form = this.fb.group({
-    colleagues: this.fb.array([]),
+    name: ['', Validators.required],
+    surname: ['', Validators.required],
+    birthdate: [null, Validators.required], // will hold a Date
   });
 
-  get colleagues() {
-    return this.form.get('colleagues') as FormArray;
-  }
+  submitting = false;
 
-  ngOnInit() {
-    this.svc.fetchAll().subscribe(
-      (res) => {
-        res.record.forEach((c) => this.addRow(c));
+  onSubmit() {
+    if (this.form.invalid) return;
+    this.submitting = true;
+
+    const name = this.form.value.name!;
+    const surname = this.form.value.surname!;
+    const birthdate = this.form.value.birthdate! as Date;
+    const isoDate = birthdate.toISOString().slice(0, 10);
+
+    this.svc.addBirthday({ name, surname, birthdate: isoDate }).subscribe({
+      next: () => {
+        alert('Birthday added!');
+        this.form.reset();
+        this.submitting = false;
       },
-      (_) => {
-        this.addRow();
-      }
-    );
-  }
-
-  addRow(col?: Colleague) {
-    this.colleagues.push(
-      this.fb.group({
-        name: [col?.name ?? '', Validators.required],
-        surname: [col?.surname ?? '', Validators.required],
-        birthdate: [col?.birthdate ?? '', Validators.required],
-      })
-    );
-  }
-
-  save() {
-    if (this.form.invalid) return alert('All fields are required');
-    this.svc.saveAll(this.colleagues.value).subscribe({
-      next: () => alert('Saved to JSONBin!'),
-      error: (err) => alert('Error: ' + err.message),
+      error: (err) => {
+        alert('Error: ' + err.message);
+        this.submitting = false;
+      },
     });
   }
 }

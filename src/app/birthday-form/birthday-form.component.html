@@ -1,25 +1,26 @@
-<form [formGroup]="form" (ngSubmit)="save()">
-  <div formArrayName="colleagues">
-    <div *ngFor="let colleagueCtrl of colleagues.controls; let i = index">
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field appearance="fill">
+    <mat-label>First Name</mat-label>
+    <input matInput formControlName="name" />
+  </mat-form-field>
 
-      <div [formGroupName]="i">
-        <div>
-          <label for="name-{{ i }}">Name:</label>
-          <input id="name-{{ i }}" formControlName="name" placeholder="Name" />
-        </div>
-        <div>
-          <label for="surname-{{ i }}">Surname:</label>
-          <input id="surname-{{ i }}" formControlName="surname" placeholder="Surname" />
-        </div>
-        <div>
-          <label for="birthdate-{{ i }}">Birthdate:</label>
-          <input id="birthdate-{{ i }}" formControlName="birthdate" type="date" />
-        </div>
-        <hr />
-      </div>
-    </div>
-  </div>
+  <mat-form-field appearance="fill">
+    <mat-label>Last Name</mat-label>
+    <input matInput formControlName="surname" />
+  </mat-form-field>
 
-  <button type="button" (click)="addRow()">Add Another Colleague</button>
-  <button type="submit" [disabled]="form.invalid">Save All</button>
+  <mat-form-field appearance="fill">
+    <mat-label>Birthdate</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="birthdate" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="form.invalid || submitting">
+    {{ submitting ? 'Adding...' : 'Add Birthday' }}
+  </button>
 </form>
