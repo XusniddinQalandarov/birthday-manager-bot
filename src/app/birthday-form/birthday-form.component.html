@@ -1,0 +1,25 @@
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div formArrayName="colleagues">
+    <div *ngFor="let colleagueCtrl of colleagues.controls; let i = index">
+
+      <div [formGroupName]="i">
+        <div>
+          <label for="name-{{ i }}">Name:</label>
+          <input id="name-{{ i }}" formControlName="name" placeholder="Name" />
+        </div>
+        <div>
+          <label for="surname-{{ i }}">Surname:</label>
+          <input id="surname-{{ i }}" formControlName="surname" placeholder="Surname" />
+        </div>
+        <div>
+          <label for="birthdate-{{ i }}">Birthdate:</label>
+          <input id="birthdate-{{ i }}" formControlName="birthdate" type="date" />
+        </div>
+        <hr />
+      </div>
+    </div>
+  </div>
+
+  <button type="button" (click)="addRow()">Add Another Colleague</button>
+  <button type="submit" [disabled]="form.invalid">Save All</button>
+</form>
