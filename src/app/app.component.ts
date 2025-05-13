@@ -9,7 +9,6 @@ import { HttpClientModule } from '@angular/common/http';
   selector: 'app-root',
   standalone: true,
   imports: [
-    BirthdayFormComponent,
     RouterOutlet,
     HttpClientModule,
     RouterModule,
